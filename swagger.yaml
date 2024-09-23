@@ -103,13 +103,170 @@ paths:
         - application/json
       responses:
         '200':
-          description: User profile retrieved successully
+          description: User profile updated successfully
           schema:
             $ref: '#/definitions/ApiResponse'
         '400':
           description: Invalid Fields
         '500':
           description: Internal Server Error
+  /transactions:
+    get:
+      security:
+        - Bearer: []
+      tags:
+        - Transactions Module
+      summary: Récupérer toutes les transactions du mois en cours
+      description: Permet aux utilisateurs de visualiser toutes leurs transactions pour le mois en cours, groupées par compte.
+      parameters:
+        - in: header
+          name: Authorization
+          description: Attach Bearer JWT token
+          required: true
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Liste des transactions groupées par compte
+          schema:
+            type: object
+            properties:
+              accountId:
+                type: string
+              transactions:
+                type: array
+                items:
+                  $ref: '#/definitions/Transaction'
+        '400':
+          description: Requête invalide (ex. : userId manquant ou incorrect)
+        '500':
+          description: Erreur interne du serveur
+
+    post:
+      security:
+        - Bearer: []
+      tags:
+        - Transactions Module
+      summary: Ajouter une nouvelle transaction
+      description: Permet aux utilisateurs d'ajouter une nouvelle transaction.
+      parameters:
+        - in: header
+          name: Authorization
+          description: Attach Bearer JWT token
+          required: true
+        - in: body
+          name: body
+          description: Création d'une nouvelle transaction
+          required: true
+        
+          schema:
+            $ref: '#/definitions/TransactionCreate'
+      produces:
+        - application/json
+      responses:
+        '201':
+          description: Transaction créée avec succès
+          schema:
+            $ref: '#/definitions/Transaction'
+        '400':
+          description: Requête invalide (ex. : données de transaction incorrectes)
+        '500':
+          description: Erreur interne du serveur
+
+  /transactions/{transactionId}:
+    get:
+      security:
+        - Bearer: []
+      tags:
+        - Transactions Module
+      summary: Récupérer les détails d'une transaction spécifique
+      description: Permet aux utilisateurs de visualiser les détails d'une transaction en particulier.
+      parameters:
+        - name: transactionId
+          in: path
+          required: true
+          description: ID de la transaction
+          type: string
+        - in: header
+          name: Authorization
+          description: Attach Bearer JWT token
+          required: true
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Détails de la transaction
+          schema:
+            $ref: '#/definitions/Transaction'
+        '404':
+          description: Transaction non trouvée
+        '500':
+          description: Erreur interne du serveur
+
+    put:
+      security:
+        - Bearer: []
+      tags:
+        - Transactions Module
+      summary: Modifier une transaction existante
+      description: Permet aux utilisateurs de modifier les informations d'une transaction existante.
+      parameters:
+        - name: transactionId
+          in: path
+          required: true
+          description: ID de la transaction
+          type: string
+        - in: header
+          name: Authorization
+          description: Attach Bearer JWT token
+          required: true
+        - in: body
+          name: body
+          description: Mise à jour d'une transaction existante
+          required: true
+          schema:
+            $ref: '#/definitions/TransactionUpdate'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Transaction mise à jour avec succès
+          schema:
+            $ref: '#/definitions/Transaction'
+        '400':
+          description: Requête invalide (ex. : données de mise à jour incorrectes)
+        '404':
+          description: Transaction non trouvée
+        '500':
+          description: Erreur interne du serveur
+
+    delete:
+      security:
+        - Bearer: []
+      tags:
+        - Transactions Module
+      summary: Supprimer une transaction existante
+      description: Permet aux utilisateurs de supprimer une transaction existante.
+      parameters:
+        - name: transactionId
+          in: path
+          required: true
+          description: ID de la transaction
+          type: string
+        - in: header
+          name: Authorization
+          description: Attach Bearer JWT token
+          required: true
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Transaction supprimée avec succès
+        '404':
+          description: Transaction non trouvée
+        '500':
+          description: Erreur interne du serveur
+
 securityDefinitions:
   Bearer:
     type: apiKey
@@ -163,4 +320,44 @@ definitions:
       firstName:
         type: string
       lastName:
+        type: string
+  Transaction:
+    type: object
+    properties:
+      id:
+        type: string
+      accountId:
+        type: string
+      amount:
+        type: number
+      date:
+        type: string
+        format: date-time
+      description:
+        type: string
+  TransactionCreate:
+    type: object
+    required:
+      - accountId
+      - amount
+      - date
+    properties:
+      accountId:
+        type: string
+      amount:
+        type: number
+      date:
+        type: string
+        format: date-time
+      description:
+        type: string
+  TransactionUpdate:
+    type: object
+    properties:
+      amount:
+        type: number
+      date:
+        type: string
+        format: date-time
+      description:
         type: string
