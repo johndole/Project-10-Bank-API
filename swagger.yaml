@@ -131,8 +131,6 @@ paths:
           schema:
             type: object
             properties:
-              accountId:
-                type: string
               transactions:
                 type: array
                 items:
@@ -240,33 +238,6 @@ paths:
         '500':
           description: Erreur interne du serveur
 
-    delete:
-      security:
-        - Bearer: []
-      tags:
-        - Transactions Module
-      summary: Supprimer une transaction existante
-      description: Permet aux utilisateurs de supprimer une transaction existante.
-      parameters:
-        - name: transactionId
-          in: path
-          required: true
-          description: ID de la transaction
-          type: string
-        - in: header
-          name: Authorization
-          description: Attach Bearer JWT token
-          required: true
-      produces:
-        - application/json
-      responses:
-        '200':
-          description: Transaction supprimée avec succès
-        '404':
-          description: Transaction non trouvée
-        '500':
-          description: Erreur interne du serveur
-
 securityDefinitions:
   Bearer:
     type: apiKey
@@ -330,6 +301,8 @@ definitions:
         type: string
       amount:
         type: number
+      currency:
+        type: string
       date:
         type: string
         format: date-time
@@ -340,12 +313,15 @@ definitions:
     required:
       - accountId
       - amount
+      - currency
       - date
     properties:
       accountId:
         type: string
       amount:
         type: number
+      currency:
+        type: string
       date:
         type: string
         format: date-time
@@ -356,8 +332,18 @@ definitions:
     properties:
       amount:
         type: number
+      currency:
+        type: string
       date:
         type: string
         format: date-time
       description:
         type: string
+      category:
+        type: array
+        items:
+          type: string
+      transactionType:
+        type: string
+      notes:
+        type: string 
